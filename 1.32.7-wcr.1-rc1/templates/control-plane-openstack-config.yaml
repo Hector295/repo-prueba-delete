@@ -1,0 +1,85 @@
+apiVersion: rke-machine-config.cattle.io/v1
+kind: OpenstackConfig
+metadata:
+  name: machine-control-plane-{{ .Values.cluster.name }}
+  namespace: fleet-default
+  {{- if .Values.controlPlaneNodes.annotations }}
+  annotations:
+    {{- toYaml .Values.controlPlaneNodes.annotations | nindent 4 }}
+  {{- end }}
+  {{- if .Values.controlPlaneNodes.labels }}
+  labels:
+    {{- toYaml .Values.controlPlaneNodes.labels | nindent 4 }}
+  {{- end }}
+activeTimeout: "{{ .Values.controlPlaneNodes.activeTimeout | default "200" }}"
+applicationCredentialId: "{{ .Values.infraConfig.applicationCredentialId | default "" }}"
+applicationCredentialName: "{{ .Values.infraConfig.applicationCredentialName | default "" }}"
+applicationCredentialSecret: "{{ .Values.infraConfig.applicationCredentialSecret | default "" }}"
+{{- if .Values.controlPlaneNodes.allowedAddressPairs }}
+allowedAddressPairs:
+{{- range .Values.controlPlaneNodes.allowedAddressPairs }}
+  - {{ . }}
+{{- end }}
+{{- else }}
+allowedAddressPairs: []
+{{- end }}
+authUrl: {{ .Values.infraConfig.authUrl | quote }}
+availabilityZone: {{ .Values.controlPlaneNodes.rootVolume.availabilityZone | default "nova" }}
+bootFromVolume: {{ .Values.controlPlaneNodes.bootFromVolume | default "true" }}
+cacert: "{{ .Values.infraConfig.caCerts.configMap.name | default "" }}"
+configDrive: {{ .Values.controlPlaneNodes.configDrive | default "false" }}
+domainId: "{{ .Values.infraConfig.domainId | default "" }}"
+{{- if .Values.infraConfig.domainName }}
+domainName: {{ .Values.infraConfig.domainName }}
+{{- end }}
+endpointType: {{ .Values.infraConfig.endpointType | default "publicURL" }}
+flavorId: "{{ .Values.controlPlaneNodes.flavorId | default "" }}"
+{{- if .Values.controlPlaneNodes.flavorName }}
+flavorName: {{ .Values.controlPlaneNodes.flavorName | quote }}
+{{- end }}
+floatingipPool: "{{ .Values.controlPlaneNodes.floatingipPool | default "" }}"
+imageId: "{{ .Values.controlPlaneNodes.imageId | default "" }}"
+{{- if .Values.controlPlaneNodes.imageName }}
+imageName: {{ .Values.controlPlaneNodes.imageName | quote }}
+{{- end }}
+insecure: {{ .Values.infraConfig.insecure | default "false" }}
+ipVersion: "{{ .Values.infraConfig.ipVersion | default "4" }}"
+keypairName: {{ .Values.infraConfig.keypairName }}
+netId: "{{ .Values.infraConfig.principalNetwork.netId | default "" }}"
+{{- if .Values.infraConfig.principalNetwork.netName }}
+netName: {{ .Values.infraConfig.principalNetwork.netName }}
+{{- end }}
+novaNetwork: {{ .Values.infraConfig.novaNetwork | default "false" }}
+password: "{{ (lookup "v1" "Secret" .Values.infraConfig.password.secret.namespace .Values.infraConfig.password.secret.name).data.password | b64dec }}"
+privateKeyFile: ""
+region: {{ .Values.infraConfig.region }}
+sshPort: {{ .Values.infraConfig.sshPort | default "22" | quote }}
+sshUser: {{ .Values.infraConfig.sshUser }}
+{{- if .Values.controlPlaneNodes.securityGroups }}
+secGroups: {{ .Values.controlPlaneNodes.securityGroups | join "," }}
+{{- else }}
+secGroups: ""
+{{- end }}
+tenantDomainId: "{{ .Values.infraConfig.tenantDomainId | default "" }}"
+tenantDomainName: "{{ .Values.infraConfig.tenantDomainName | default "" }}"
+tenantId: "{{ .Values.infraConfig.tenantId | default "" }}"
+{{- if .Values.infraConfig.tenantName }}
+tenantName: {{ .Values.infraConfig.tenantName }}
+{{- end }}
+{{- if .Values.controlPlaneNodes.userDataFile }}
+userDataFile: |
+  {{- .Values.controlPlaneNodes.userDataFile | nindent 2 }}
+{{- else }}
+userDataFile: ""
+{{- end }}
+userDomainId: "{{ .Values.infraConfig.userDomainId | default "" }}"
+userDomainName: "{{ .Values.infraConfig.userDomainName | default "" }}"
+userId: "{{ .Values.infraConfig.userId | default "" }}"
+{{- if .Values.infraConfig.username }}
+username: {{ .Values.infraConfig.username }}
+{{- end }}
+volumeDevicePath: "{{ .Values.controlPlaneNodes.rootVolume.volumeDevicePath | default "" }}"
+volumeId: "{{ .Values.controlPlaneNodes.rootVolume.volumeId | default "" }}"
+volumeName: "{{ .Values.controlPlaneNodes.rootVolume.volumeName | default "" }}"
+volumeSize: "{{ .Values.controlPlaneNodes.rootVolume.sizeGiB | default "20" }}"
+volumeType: "{{ .Values.controlPlaneNodes.rootVolume.volumeType | default "" }}"

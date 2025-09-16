@@ -1,0 +1,43 @@
+{{ if .Values.x509CertExporter.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-x509-ce
+  namespace: fleet-default
+spec:
+  chart: "x509-certificate-exporter"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "x509-certificate-exporter"
+  version: "3.18.1"
+  {{- if not (empty .Values.x509CertExporter.customValues) }}
+  values:
+    {{ toYaml .Values.x509CertExporter.customValues }}
+  {{- else }}
+  values:
+    image:
+      pullPolicy: IfNotPresent
+      psp:
+        create: false
+      rbac:
+        create: true
+      podExtraLabels: { }
+      hostPathsExporter:
+        podAnnotations: { }
+        watchDirectories: [ ]
+        watchFiles: [ ]
+        watchKubeconfFiles: [ ]
+        daemonSets:
+          cp:
+            nodeSelector:
+              node-role.kubernetes.io/control-plane: ""
+            tolerations:
+              - effect: NoSchedule
+                key: node-role.kubernetes.io/control-plane
+                operator: Exists
+      rbacProxy:
+        enabled: false
+  {{- end }}
+  defaultNamespace: "monitoring"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

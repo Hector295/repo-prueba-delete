@@ -1,0 +1,46 @@
+{{ if .Values.kubevirt.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-kubevirt-cdi
+  namespace: fleet-default
+spec:
+  chart: "cdi"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "cdi"
+  version: "0.5.0"
+  {{- if not (empty .Values.kubevirt.customValues) }}
+  values:
+    {{ toYaml .Values.kubevirt.customValues }}
+  {{- end }}
+  defaultNamespace: "kubevirt"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+---
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-kubevirt
+  namespace: fleet-default
+spec:
+  chart: "kubevirt"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "kubevirt"
+  version: "0.5.0"
+  {{- if not (empty .Values.kubevirt.customValues) }}
+  values:
+    {{ toYaml .Values.kubevirt.customValues }}
+  {{- else }}
+  values:
+    kubevirt:
+      monitorAccount: rancher-monitoring-prometheus
+      monitorNamespace: cattle-monitoring-system
+      configuration:
+        developerConfiguration:
+          useEmulation: true
+  {{- end }}
+  defaultNamespace: "kubevirt"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+---
+{{- end }}

@@ -1,0 +1,80 @@
+{{ if .Values.logging.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-loggin-crd
+  namespace: fleet-default
+spec:
+  chart: "rancher-logging-crd"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "rancher-logging-crd"
+  version: "106.0.4"
+  defaultNamespace: "cattle-logging-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+---
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-loggin
+  namespace: fleet-default
+spec:
+  chart: "rancher-logging"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "rancher-logging"
+  version: "106.0.4"
+  {{- if not (empty .Values.logging.customValues) }}
+  values:
+    {{ toYaml .Values.logging.customValues }}
+  {{- else }}
+  values:
+    rke2:
+      enabled: true
+      logging:
+        enableRecreateWorkloadOnImmutableFieldChange: true
+        enabled: true
+        clusterFlows:
+          - name: all-logs
+            spec:
+              filters:
+                - record_modifier:
+                    records:
+                      - cluster-name: {{ .Values.cluster.name }}
+              globalOutputRefs:
+                - fluentd-forward
+              match:
+                - select: { }
+        fluentd:
+          bufferStorageVolume:
+            pvc:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 5Gi
+        clusterOutputs:
+          - name: fluentd-forward
+            spec:
+              forward:
+                buffer:
+                  flush_interval: 10s
+                  retry_forever: false
+                  retry_max_interval: '30'
+                  type: file
+                compress: gzip
+                require_ack_response: false
+                servers:
+                  - host: {{ .Values.logging.clusterOutputs.server.host }}
+                    port: {{ .Values.logging.clusterOutputs.server.port }}
+                tls_insecure_mode: true
+      hostTailer:
+        enabled: true
+        fileTailers:
+          - name: syslog
+            path: /var/log/syslog
+  {{- end }}
+  defaultNamespace: "cattle-logging-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

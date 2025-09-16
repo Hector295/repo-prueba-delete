@@ -1,0 +1,24 @@
+{{ if .Values.storage.cinder.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-cinder
+  namespace: fleet-default
+spec:
+  chart: "openstack-cinder-csi"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "openstack-cinder-csi"
+  version: 2.1.1
+  {{- if not (empty .Values.storage.cinder.customValues) }}
+  values:
+    {{ toYaml .Values.storage.cinder.customValues }}
+  {{- else }}
+  values:
+    secret:
+      enabled: true
+      name: cloud-config
+  {{- end }}
+  defaultNamespace: "kube-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

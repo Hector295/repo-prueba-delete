@@ -1,0 +1,40 @@
+{{ if .Values.storage.openebs.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-openebs
+  namespace: fleet-default
+spec:
+  chart: "openebs"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "openebs"
+  version: "4.2.0"
+  {{- if not (empty .Values.storage.openebs.customValues) }}
+  values:
+    {{ toYaml .Values.storage.openebs.customValues }}
+  {{- else }}
+  values:
+    apiserver:
+      enabled: false
+      localprovisioner:
+        replicas: 2
+      ndm:
+        enabled: false
+      ndmOperator:
+        enabled: false
+      analytics:
+        enabled: false
+      webhook:
+        enabled: false
+      snapshotOperator:
+        enabled: false
+      policies:
+        monitoring:
+          enabled: false
+      provisioner:
+        enabled: false
+  {{- end }}
+  defaultNamespace: "default"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

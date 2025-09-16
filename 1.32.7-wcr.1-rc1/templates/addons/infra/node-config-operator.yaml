@@ -1,0 +1,22 @@
+{{ if .Values.nodeConfigOperator.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-nco
+  namespace: fleet-default
+spec:
+  chart: "node-config-operator"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "node-config-operator"
+  version: 0.3.0
+  {{- if not (empty .Values.nodeConfigOperator.customValues) }}
+  values:
+    {{ toYaml .Values.nodeConfigOperator.customValues }}
+    managerConfig:
+      aptEnabled: {{ .Values.nodeConfigOperator.managerConfig.aptEnabled }}
+      hostfsEnabled: {{ .Values.nodeConfigOperator.managerConfig.hostfsEnabled }}
+  {{- end }}
+  defaultNamespace: "nco-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

@@ -1,0 +1,19 @@
+{{ if .Values.ingressNginx.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-ingress-nginx
+  namespace: fleet-default
+spec:
+  chart: "rke2-ingress-nginx"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "rke2-ingress-nginx"
+  version: "4.12.103"
+  {{- if not (empty .Values.ingressNginx.customValues) }}
+  values:
+    {{ toYaml .Values.ingressNginx.customValues }}
+  {{- end }}
+  defaultNamespace: "kube-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

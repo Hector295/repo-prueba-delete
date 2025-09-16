@@ -1,0 +1,44 @@
+{{ if .Values.sriovOperator.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-sriov-crd
+  namespace: fleet-default
+spec:
+  chart: "sriov-crd"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "sriov-crd"
+  version: "1.5.2-up1.5.0"
+  defaultNamespace: "cattle-sriov-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+---
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-sriov-operator
+  namespace: fleet-default
+spec:
+  chart: "sriov-network-operator"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "sriov-network-operator"
+  version: "1.5.2-up1.5.0"
+  {{- if not (empty .Values.ntp.customValues) }}
+  values:
+    {{ toYaml .Values.ntp.customValues }}
+  {{- else }}
+  values:
+    operator:
+      resourcePrefix: "whitestack.com"
+    sriovOperatorConfig:
+      deploy: true
+      configDaemonNodeSelector: { }
+      logLevel: 2
+      disableDrain: false
+      configurationMode: daemon
+  {{- end }}
+  defaultNamespace: "cattle-sriov-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+---
+{{- end }}

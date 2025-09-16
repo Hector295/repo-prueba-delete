@@ -1,0 +1,59 @@
+{{ if or .Values.monitoring.enabled .Values.kubevirt.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-monitoring
+  namespace: fleet-default
+spec:
+  chart: "rancher-monitoring"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "rancher-monitoring"
+  version: 106.1.2
+  {{- if not (empty .Values.metallb.customValues) }}
+  values:
+    {{ toYaml .Values.metallb.customValues }}
+  {{- else }}
+  values:
+    alertmanager:
+      enabled: false
+      prometheus:
+        thanosService:
+          enabled: true
+        prometheusSpec:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+          externalLabels:
+            k8s_cluster: {{ .Values.cluster.name }}
+          thanos:
+            objstoreConfig:
+              config:
+                access_key: {{ .Values.monitoring.thanos.objectStorage.accessKey }}
+                bucket: {{ .Values.monitoring.thanos.objectStorage.bucket }}
+                endpoint: {{ .Values.monitoring.thanos.objectStorage.endpoint }}
+                insecure: true
+                secret_key: {{ .Values.monitoring.thanos.objectStorage.secretKey }}
+              type: S3
+        thanosIngress:
+          annotations:
+            nginx.ingress.kubernetes.io/backend-protocol: GRPC
+            nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+            nginx.ingress.kubernetes.io/grpc-backend: 'true'
+            nginx.ingress.kubernetes.io/protocol: h2c
+            nginx.ingress.kubernetes.io/proxy-read-timeout: '160'
+          enabled: true
+          hosts:
+            - {{ .Values.monitoring.thanosIngress.host }}
+          labels: { }
+          nodePort: 30901
+          paths:
+            - /
+          servicePort: 10901
+          tls: null
+          pathType: ImplementationSpecific
+  {{- end }}
+  defaultNamespace: "cattle-monitoring-system"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

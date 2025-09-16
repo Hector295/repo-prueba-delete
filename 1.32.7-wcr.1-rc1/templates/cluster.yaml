@@ -1,0 +1,210 @@
+apiVersion: provisioning.cattle.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.cluster.name }}
+  namespace: fleet-default
+  {{- if .Values.cluster.annotations }}
+  annotations:
+    {{- toYaml .Values.cluster.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "rke2-rancher-openstack-calico.labels" . | nindent 4 }}
+    {{- if .Values.cluster.labels }}
+    {{- toYaml .Values.cluster.labels | nindent 4 }}
+    {{- end }}
+spec:
+  #cloudCredentialSecretName: {{ .Values.infraConfig.cloudCredentialSecretName }}
+  kubernetesVersion: v1.32.7+rke2r1
+  rkeConfig:
+    {{- if .Values.storage.cinder.enabled }}
+    additionalManifest: |-
+      ---
+      {{ include "cloudConfig.innerSecret" . | indent 4 }}
+    {{- if not (empty .Values.cluster.additionalManifest ) }}
+      ---
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- else }}
+    {{- if not (empty .Values.cluster.additionalManifest ) }}
+    additionalManifest: |-
+      ---
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- end }}
+
+    chartValues:
+      rke2-calico:
+        {{- if .Values.cniConfig.additionalConfig }}
+        {{- toYaml .Values.cniConfig.additionalConfig }}
+        {{- else }}
+        installation:
+          calicoNetwork:
+            {{- if eq .Values.cniConfig.bgp true }}
+            bgp: Enabled
+            {{- end }}
+            {{- if not (hasKey .Values.cniConfig.additionalConfig "mtu") }}
+            mtu: {{ .Values.cniConfig.mtu | default 1440 }}
+            {{- end }}
+            ipPools:
+              - cidr: {{ .Values.cniConfig.podCIDR }}
+                blockSize: 26
+                disableBGPExport: true
+                {{- if .Values.cniConfig.bgp }}
+                encapsulation: IPIP
+                {{- else }}
+                encapsulation: {{ .Values.cniConfig.tunnelProtocol | upper }}
+                {{- end }}
+                {{- if eq .Values.cniConfig.masquerade true }}
+                natOutgoing: Enabled
+                {{- end }}
+                nodeSelector: all()
+        {{- end }}
+      {{- if .Values.cniConfig.multusEnabled }}
+      rke2-multus:
+        rke2-whereabouts:
+          enabled: true
+      {{- end }}
+      {{- if not (empty .Values.ingressNginx.customValues) }}
+      rke2-ingress-nginx:
+      {{- toYaml .Values.ingressNginx.customValues }}
+      {{- end }}
+    etcd:
+      disableSnapshots: {{ .Values.cluster.etcd.backup.disableAutomaticSnapshots }}
+      snapshotRetention: 5
+      snapshotScheduleCron: 0 */5 * * *
+    machineGlobalConfig:
+      {{- if .Values.cniConfig.multusEnabled }}
+      cni: "multus,calico"
+      {{- else }}
+      cni: calico
+      {{- end }}
+      disable-kube-proxy: false
+      {{- if .Values.cluster.etcd.exposeMetrics }}
+      etcd-expose-metrics: {{ .Values.cluster.etcd.exposeMetrics }}
+      {{- end }}
+      {{- if not (empty .Values.cluster.kubeComponents.kubeControllerManager.extraArgs) }}
+      kube-controller-manager-arg:
+        {{- with $.Values.cluster.kubeComponents.kubeControllerManager.extraArgs }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- if not (empty .Values.cluster.kubeComponents.kubeShceduler.extraArgs) }}
+      kube-scheduler-arg:
+        {{- with $.Values.cluster.kubeComponents.kubeShceduler.extraArgs }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- if not (empty .Values.cluster.kubeComponents.kubeApiServer.extraArgs) }}
+      kube-apiserver-arg:
+        {{- with $.Values.cluster.kubeComponents.kubeApiServer.extraArgs }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- if not (empty .Values.cluster.kubeComponents.kubeProxy.extraArgs) }}
+      kubelet-proxy-arg:
+        {{- with $.Values.cluster.kubeComponents.kubeProxy.extraArgs }}
+        - {{ . }}
+        {{- end }}
+      {{- end }}
+    machinePools:
+      - name: control-plane-{{ .Values.cluster.name }}-node
+        quantity: {{ .Values.controlPlaneNodes.quantity }}
+        controlPlaneRole: true
+        {{- if not (empty .Values.controlPlaneNodes.labels) }}
+        labels:
+          {{- with .Values.controlPlaneNodes.labels }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+        {{- end }}
+        {{- if not (empty .Values.controlPlaneNodes.taints) }}
+        taints:
+          {{- with .Values.controlPlaneNodes.taints }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+        {{- end }}
+        etcdRole: true
+        workerRole: false
+        machineConfigRef:
+          kind: OpenstackConfig
+          name: machine-control-plane-{{ .Values.cluster.name }}
+
+      {{- range $nodepool := .Values.workerNodes.nodes }}
+      - name: {{ $nodepool.name }}
+        quantity: {{ $nodepool.quantity | default .Values.workerNodes.defaults.quantity }}
+        controlPlaneRole: false
+        {{- if or (not (empty $nodepool.labels)) (not (empty .Values.workerNodes.defaults.labels)) }}
+        labels:
+          {{- with ($nodepool.labels | default .Values.workerNodes.defaults.labels) }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+        {{- end }}
+        {{- if or (not (empty $nodepool.taints)) (not (empty .Values.workerNodes.defaults.taints)) }}
+        taints:
+          {{- with ($nodepool.taints | default .Values.workerNodes.defaults.taints) }}
+          {{- toYaml . | nindent 8 }}
+          {{- end }}
+        {{- end }}
+        etcdRole: false
+        workerRole: true
+        machineConfigRef:
+          kind: OpenstackConfig
+          name: {{ $nodepool.name }}
+      {{- end }}
+    machineSelectorConfig:
+      - config:
+          protect-kernel-defaults: false
+    {{- if .Values.registries.enabled }}
+    registries:
+      configs:
+        {{- range .Values.registries.configs }}
+        {{ .name }}:
+          authConfigSecretName: {{ .authConfigSecretName }}
+          caBundle: {{ .caBundle }}
+          insecureSkipVerify: {{ .insecureSkipVerify }}
+          tlsSecretName: {{ .tlsSecretName }}
+        {{- end }}
+      {{- if .Values.registries.mirrors }}
+      mirrors:
+        {{- range .Values.registries.mirrors }}
+        {{ .name | quote }}:
+          endpoint:
+            {{- range .endpoints }}
+            - {{ . }}
+            {{- end }}
+          {{- if .rewrite }}
+          rewrite:
+            {{- range $key, $value := .rewrite }}
+            "{{ $key }}": "{{ $value }}"
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+
+    upgradeStrategy:
+      controlPlaneConcurrency: '1'
+      controlPlaneDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        ignoreErrors: false
+        postDrainHooks: null
+        preDrainHooks: null
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120
+      workerConcurrency: 10%
+      workerDrainOptions:
+        deleteEmptyDirData: true
+        disableEviction: false
+        enabled: false
+        force: false
+        gracePeriod: -1
+        ignoreDaemonSets: true
+        ignoreErrors: false
+        postDrainHooks: null
+        preDrainHooks: null
+        skipWaitForDeleteTimeoutSeconds: 0
+        timeout: 120

@@ -1,0 +1,19 @@
+{{ if or .Values.nodeConfigOperator.enabled .Values.certManager.enabled }}
+apiVersion: management.cattle.io/v3
+kind: ManagedChart
+metadata:
+  name: {{ include "rke2-openstack-calico.name" . }}-cert-manager
+  namespace: fleet-default
+spec:
+  chart: "cert-manager"
+  repoName: {{ .Values.cluster.addonsRepoName }}
+  releaseName: "cert-manager"
+  version: "v1.17.1"
+  {{- if not (empty .Values.certManager.customValues) }}
+  values:
+    {{ toYaml .Values.certManager.customValues }}
+  {{- end }}
+  defaultNamespace: "cert-manager"
+  targets:
+    - clusterName: {{ .Values.cluster.name }}
+{{- end }}

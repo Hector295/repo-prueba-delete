@@ -1,0 +1,90 @@
+{{- range $nodepool := .Values.workerNodes.nodes }}
+---
+apiVersion: rke-machine-config.cattle.io/v1
+kind: OpenstackConfig
+metadata:
+  name: {{ $nodepool.name }}
+  namespace: fleet-default
+  {{- if or ($nodepool.annotations) ($.Values.workerNodes.defaults.annotations) }}
+  annotations:
+    {{- with ($nodepool.annotations | default $.Values.workerNodes.defaults.annotations) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  {{- if or ($nodepool.labels) ($.Values.workerNodes.defaults.labels) }}
+  labels:
+    {{- with ($nodepool.labels | default $.Values.workerNodes.defaults.labels) }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+activeTimeout: "{{ $nodepool.activeTimeout | default $.Values.workerNodes.defaults.activeTimeout | default "200" }}"
+applicationCredentialId: "{{ $.Values.infraConfig.applicationCredentialId | default "" }}"
+applicationCredentialName: "{{ $.Values.infraConfig.applicationCredentialName | default "" }}"
+applicationCredentialSecret: "{{ $.Values.infraConfig.applicationCredentialSecret | default "" }}"
+{{- if or ($nodepool.allowedAddressPairs) ($.Values.workerNodes.defaults.allowedAddressPairs) }}
+allowedAddressPairs:
+{{- range ($nodepool.allowedAddressPairs | default $.Values.workerNodes.defaults.allowedAddressPairs) }}
+  - {{ . }}
+{{- end }}
+{{- else }}
+allowedAddressPairs: []
+{{- end }}
+authUrl: {{ $.Values.infraConfig.authUrl | quote }}
+availabilityZone: {{ $nodepool.rootVolume.availabilityZone | default $.Values.workerNodes.defaults.rootVolume.availabilityZone | default "nova" }}
+bootFromVolume: {{ $nodepool.bootFromVolume | default $.Values.workerNodes.defaults.bootFromVolume | default "true" }}
+cacert: "{{ $.Values.infraConfig.caCerts.configMap.name | default "" }}"
+configDrive: {{ $nodepool.configDrive | default $.Values.workerNodes.defaults.configDrive | default "false" }}
+domainId: "{{ $.Values.infraConfig.domainId | default "" }}"
+{{- if $.Values.infraConfig.domainName }}
+domainName: {{ $.Values.infraConfig.domainName }}
+{{- end }}
+endpointType: {{ $.Values.infraConfig.endpointType | default "publicURL" }}
+flavorId: "{{ $nodepool.flavorId | default $.Values.workerNodes.defaults.flavorId | default "" }}"
+{{- if or ($nodepool.flavorName) ($.Values.workerNodes.defaults.flavorName) }}
+flavorName: {{ ($nodepool.flavorName | default $.Values.workerNodes.defaults.flavorName) | quote }}
+{{- end }}
+floatingipPool: "{{ $nodepool.floatingipPool | default $.Values.workerNodes.defaults.floatingipPool | default "" }}"
+imageId: "{{ $nodepool.imageId | default $.Values.workerNodes.defaults.imageId | default "" }}"
+{{- if or ($nodepool.imageName) ($.Values.workerNodes.imageName) }}
+imageName: {{ ($nodepool.imageName | default $.Values.workerNodes.imageName) | quote }}
+{{- end }}
+insecure: {{ $.Values.infraConfig.insecure | default "false" }}
+ipVersion: "{{ $.Values.infraConfig.ipVersion | default "4" }}"
+keypairName: {{ $.Values.infraConfig.keypairName }}
+netId: "{{ $.Values.infraConfig.principalNetwork.netId | default "" }}"
+{{- if $.Values.infraConfig.principalNetwork.netName }}
+netName: {{ $.Values.infraConfig.principalNetwork.netName }}
+{{- end }}
+novaNetwork: {{ $.Values.infraConfig.novaNetwork | default "false" }}
+password: "{{ (lookup "v1" "Secret" .Values.infraConfig.password.secret.namespace .Values.infraConfig.password.secret.name).data.password | b64dec }}"
+privateKeyFile: ""
+region: {{ $.Values.infraConfig.region }}
+sshPort: {{ $.Values.infraConfig.sshPort | default "22" | quote }}
+sshUser: {{ $.Values.infraConfig.sshUser }}
+{{- if or ($nodepool.securityGroups) ($.Values.workerNodes.defaults.securityGroups) }}
+secGroups: {{ ($nodepool.securityGroups | default $.Values.workerNodes.defaults.securityGroups) | join "," }}
+{{- else }}
+secGroups: ""
+{{- end }}
+tenantDomainId: "{{ $.Values.infraConfig.tenantDomainId | default "" }}"
+tenantDomainName: "{{ $.Values.infraConfig.tenantDomainName | default "" }}"
+tenantId: "{{ $.Values.infraConfig.tenantId | default "" }}"
+{{- if $.Values.infraConfig.tenantName }}
+tenantName: {{ $.Values.infraConfig.tenantName }}
+{{- end }}
+{{- if or ($nodepool.userDataFile) ($.Values.workerNodes.defaults.userDataFile) }}
+userDataFile: |
+  {{- ($nodepool.userDataFile | default $.Values.workerNodes.defaults.userDataFile) | nindent 2 }}
+{{- else }}
+userDataFile: ""
+{{- end }}
+userDomainId: "{{ $.Values.infraConfig.userDomainId | default "" }}"
+userDomainName: "{{ $.Values.infraConfig.userDomainName | default "" }}"
+userId: "{{ $.Values.infraConfig.userId | default "" }}"
+username: {{ $.Values.infraConfig.username }}
+volumeDevicePath: "{{ $nodepool.rootVolume.volumeDevicePath | default $.Values.workerNodes.defaults.rootVolume.volumeDevicePath | default "" }}"
+volumeId: "{{ $nodepool.rootVolume.volumeId | default $.Values.workerNodes.defaults.rootVolume.volumeId | default "" }}"
+volumeName: "{{ $nodepool.rootVolume.volumeName | default $.Values.workerNodes.defaults.rootVolume.volumeName | default "" }}"
+volumeSize: "{{ $nodepool.rootVolume.sizeGiB | default $.Values.workerNodes.defaults.rootVolume.sizeGiB | default "20" }}"
+volumeType: "{{ $nodepool.rootVolume.volumeType | default $.Values.workerNodes.defaults.rootVolume.volumeType | default "" }}"
+{{- end }}

@@ -1,0 +1,848 @@
+questions:
+
+- variable: cluster.name
+  label: "Cluster Name"
+  description: "Identifier used for naming resources and certificate generation"
+  type: string
+  required: true
+  default: "prod-cluster"
+  group: "Cluster Configuration"
+
+- variable: cluster.labels
+  label: "Cluster Labels"
+  description: "Kubernetes labels applied to all cluster nodes for scheduling and selection"
+  type: map[string]
+  required: false
+  default: {}
+  group: "Cluster Configuration"
+
+- variable: cluster.annotations
+  label: "Cluster Annotations"
+  description: "Kubernetes annotations applied to all cluster nodes for metadata"
+  type: map[string]
+  required: false
+  default: {}
+  group: "Cluster Configuration"
+
+- variable: cluster.addonsRepoCredentials.secret.name
+  label: "Addons Repository Secret Name"
+  description: "Name of the secret containing repository credentials"
+  type: string
+  required: false
+  default: "clustertemplates-auth-whitecruiserapps"
+  group: "Cluster Configuration"
+
+- variable: cluster.addonsRepoCredentials.secret.namespace
+  label: "Addons Repository Secret Namespace"
+  description: "Namespace where the credentials secret is stored"
+  type: string
+  required: false
+  default: "cattle-system"
+  group: "Cluster Configuration"
+
+- variable: cluster.etcd.exposeMetrics
+  label: "Expose ETCD Metrics"
+  description: "Enable Prometheus metrics endpoint for ETCD monitoring (port 2381)"
+  type: boolean
+  default: false
+  group: "ETCD Configuration"
+
+- variable: cluster.etcd.backup.disableAutomaticSnapshots
+  label: "Disable Automatic ETCD Snapshots"
+  description: "Disable automatic periodic snapshots (manual snapshots still available)"
+  type: boolean
+  default: true
+  group: "ETCD Configuration"
+
+- variable: cluster.etcd.extraArgs
+  label: "ETCD Extra Arguments"
+  description: "Additional command-line arguments for ETCD server startup"
+  type: array[string]
+  required: false
+  default: []
+  group: "ETCD Configuration"
+
+- variable: cluster.kubeComponents.kubeControllerManager.extraArgs
+  label: "Controller Manager Extra Arguments"
+  description: "Additional arguments for controller manager (security, cloud provider, etc.)"
+  type: array[string]
+  required: false
+  default: []
+  group: "Kubernetes Components"
+
+- variable: cluster.kubeComponents.kubeApiServer.extraArgs
+  label: "API Server Extra Arguments"
+  description: "Additional arguments for API server (authentication, authorization, etc.)"
+  type: array[string]
+  required: false
+  default: []
+  group: "Kubernetes Components"
+
+- variable: cluster.kubeComponents.kubeScheduler.extraArgs
+  label: "Scheduler Extra Arguments"
+  description: "Additional arguments for scheduler (policies, profiles, etc.)"
+  type: array[string]
+  required: false
+  default: []
+  group: "Kubernetes Components"
+
+- variable: cluster.kubeComponents.kubeProxy.extraArgs
+  label: "Proxy Extra Arguments"
+  description: "Additional arguments for kube-proxy (networking mode, IP tables, etc.)"
+  type: array[string]
+  required: false
+  default: []
+  group: "Kubernetes Components"
+
+- variable: cluster.kubeComponents.kubelet.extraArgs
+  label: "Kubelet Extra Arguments"
+  description: "Additional arguments for kubelet (container runtime, logging, security)"
+  type: array[string]
+  required: false
+  default: []
+  group: "Kubernetes Components"
+
+- variable: infraConfig.authUrl
+  label: "OpenStack Auth URL"
+  description: "OpenStack Keystone authentication URL (identity service endpoint)"
+  type: string
+  required: true
+  default: "https://whitecloud.intra.whitestack.com:5000/v3"
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.availabilityZones
+  label: "Availability Zones"
+  description: "List of OpenStack availability zones for node distribution and high availability"
+  type: string
+  required: false
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.domainName
+  label: "Domain Name"
+  description: "OpenStack domain name"
+  type: string
+  required: true
+  default: "Default"
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.keypairName
+  label: "Keypair Name"
+  description: "OpenStack keypair for SSH access"
+  type: string
+  required: true
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.region
+  label: "Region"
+  description: "OpenStack region"
+  type: string
+  required: true
+  default: "RegionOne"
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.sshUser
+  label: "SSH User"
+  description: "SSH username for node access"
+  type: string
+  required: true
+  default: "ubuntu"
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.tenantName
+  label: "Tenant Name"
+  description: "OpenStack tenant/project name"
+  type: string
+  required: true
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.username
+  label: "Username"
+  description: "OpenStack username"
+  type: string
+  required: true
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.netName
+  label: "Network Name"
+  description: "Primary network name for cluster nodes"
+  type: string
+  required: true
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.password.secret.name
+  label: "OpenStack Password Secret Name"
+  description: "Name of the secret containing OpenStack password"
+  type: string
+  required: true
+  default: "passopenstack"
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.password.secret.namespace
+  label: "OpenStack Password Secret Namespace"
+  description: "Namespace of the secret containing OpenStack password"
+  type: string
+  required: true
+  default: "default"
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.caCerts.configMap.name
+  label: "CA Certificates ConfigMap Name"
+  description: "Name of the ConfigMap containing CA certificates"
+  type: string
+  required: false
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: infraConfig.caCerts.configMap.namespace
+  label: "CA Certificates ConfigMap Namespace"
+  description: "Namespace of the ConfigMap containing CA certificates"
+  type: string
+  required: false
+  default: ""
+  group: "Infrastructure Configuration"
+
+- variable: controlPlaneNodes.quantity
+  label: "Control Plane Nodes Quantity"
+  description: "Number of control plane nodes"
+  type: int
+  required: true
+  default: 1
+  min: 1
+  group: "Control Plane Configuration"
+
+- variable: controlPlaneNodes.flavorName
+  label: "Control Plane Flavor"
+  description: "OpenStack flavor for control plane nodes"
+  type: string
+  required: true
+  default: "m1.large"
+  group: "Control Plane Configuration"
+
+- variable: controlPlaneNodes.imageName
+  label: "Control Plane Image"
+  description: "Operating system image for control plane nodes"
+  type: string
+  required: true
+  default: "Ubuntu 22.04 LTS"
+  group: "Control Plane Configuration"
+
+- variable: controlPlaneNodes.rootVolume.sizeGiB
+  label: "Control Plane Root Volume Size (GiB)"
+  description: "Root volume size in GiB for control plane nodes"
+  type: string
+  required: false
+  default: "40"
+  group: "Control Plane Configuration"
+
+- variable: controlPlaneNodes.securityGroups
+  label: "Control Plane Security Groups"
+  description: "Security groups for control plane nodes"
+  type: string
+  required: false
+  default: ""
+  group: "Control Plane Configuration"
+
+- variable: controlPlaneNodes.labels
+  label: "Control Plane Labels"
+  description: "Kubernetes labels for control plane nodes"
+  type: array[string]
+  required: false
+  default: ["node-role.kubernetes.io/control-plane=true"]
+  group: "Control Plane Configuration"
+
+- variable: controlPlaneNodes.annotations
+  label: "Control Plane Annotations"
+  description: "Kubernetes annotations for control plane nodes"
+  type: map[string]
+  required: false
+  default: {}
+  group: "Control Plane Configuration"
+
+- variable: workerNodes.imageName
+  label: "Worker Nodes Image"
+  description: "Operating system image for worker nodes"
+  type: string
+  required: true
+  default: "Ubuntu 22.04 LTS"
+  group: "Worker Nodes Configuration"
+
+- variable: workerNodes.defaults.quantity
+  label: "Default Worker Nodes Quantity"
+  description: "Default number of worker nodes"
+  type: int
+  required: true
+  default: 2
+  min: 1
+  group: "Worker Nodes Configuration"
+
+- variable: workerNodes.defaults.flavorName
+  label: "Default Worker Flavor"
+  description: "Default OpenStack flavor for worker nodes"
+  type: string
+  required: true
+  default: "m1.large"
+  group: "Worker Nodes Configuration"
+
+- variable: workerNodes.defaults.rootVolume.sizeGiB
+  label: "Default Worker Root Volume Size (GiB)"
+  description: "Default root volume size in GiB for worker nodes"
+  type: string
+  required: false
+  default: "50"
+  group: "Worker Nodes Configuration"
+
+- variable: workerNodes.defaults.securityGroups
+  label: "Default Worker Security Groups"
+  description: "Default security groups for worker nodes"
+  type: string
+  required: false
+  default: ""
+  group: "Worker Nodes Configuration"
+
+- variable: workerNodes.defaults.labels
+  label: "Default Worker Labels"
+  description: "Default Kubernetes labels for worker nodes"
+  type: array[string]
+  required: false
+  default: ["node-role.kubernetes.io/worker=true"]
+  group: "Worker Nodes Configuration"
+
+- variable: cniConfig.podCIDR
+  label: "Pod CIDR"
+  description: "CIDR block for pod network"
+  type: string
+  required: true
+  default: "10.42.0.0/16"
+  group: "Network Configuration"
+
+- variable: cniConfig.serviceCIDR
+  label: "Service CIDR"
+  description: "CIDR block for service network"
+  type: string
+  required: true
+  default: "10.43.0.0/16"
+  group: "Network Configuration"
+
+- variable: cniConfig.mtu
+  label: "MTU Size"
+  description: "Maximum Transmission Unit size for network interface"
+  type: int
+  required: true
+  default: 1440
+  min: 1280
+  group: "Network Configuration"
+
+- variable: cniConfig.tunnelProtocol
+  label: "Tunnel Protocol"
+  description: "Tunnel protocol for overlay network"
+  type: enum
+  required: true
+  default: "VXLAN"
+  options:
+    - "VXLAN"
+    - "IPIP"
+  group: "Network Configuration"
+
+- variable: cniConfig.masquerade
+  label: "Enable Masquerade"
+  description: "Enable IP masquerading for outbound traffic"
+  type: boolean
+  default: true
+  group: "Network Configuration"
+
+- variable: cniConfig.bgp
+  label: "Enable BGP"
+  description: "Enable Border Gateway Protocol for routing"
+  type: boolean
+  default: false
+  group: "Network Configuration"
+
+- variable: cniConfig.multusEnabled
+  label: "Enable Multus"
+  description: "Enable Multus for multiple network interfaces"
+  type: boolean
+  default: false
+  group: "Network Configuration"
+
+- variable: cniConfig.additionalConfig
+  label: "Additional CNI Configuration"
+  description: "Additional configuration for CNI (YAML format)"
+  type: map[string]
+  required: false
+  default: {}
+  group: "Network Configuration"
+
+- variable: storage.longhorn.enabled
+  label: "Enable Longhorn Storage"
+  description: "Enable Longhorn distributed block storage"
+  type: boolean
+  default: false
+  group: "Storage Configuration"
+
+- variable: storage.longhorn.customValues
+  label: "Longhorn Custom Values"
+  description: "Custom values override for Longhorn (YAML format)"
+  type: yaml
+  required: false
+  show_if: "storage.longhorn.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.openebs.enabled
+  label: "Enable OpenEBS Storage"
+  description: "Enable OpenEBS container storage"
+  type: boolean
+  default: true
+  group: "Storage Configuration"
+
+- variable: storage.openebs.customValues
+  label: "OpenEBS Custom Values"
+  description: "Custom values override for OpenEBS (YAML format)"
+  type: yaml
+  required: false
+  show_if: "storage.openebs.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cinder.enabled
+  label: "Enable Cinder Storage"
+  description: "Enable OpenStack Cinder block storage"
+  type: boolean
+  default: false
+  group: "Storage Configuration"
+
+- variable: storage.cinder.customValues
+  label: "Cinder Custom Values"
+  description: "Custom values override for Cinder (YAML format)"
+  type: yaml
+  required: false
+  show_if: "storage.cinder.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.enabled
+  label: "Enable CephFS Storage"
+  description: "Enable CephFS filesystem storage"
+  type: boolean
+  default: false
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.clusterID
+  label: "CephFS Cluster ID"
+  description: "Ceph cluster identifier"
+  type: string
+  required: true
+  default: "aaaaaaaa-bbbb-1111-2222-33333ccccccc"
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.monitorList
+  label: "CephFS Monitor List"
+  description: "List of Ceph monitor endpoints (format: ip:port)"
+  type: array[string]
+  required: false
+  default: []
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.pool
+  label: "CephFS Pool"
+  description: "Ceph pool name for volumes"
+  type: string
+  required: true
+  default: "volumes"
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.userID
+  label: "CephFS User ID"
+  description: "Ceph user identifier"
+  type: string
+  required: true
+  default: "admin"
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.userKey
+  label: "CephFS User Key"
+  description: "Ceph user authentication key"
+  type: password
+  required: true
+  default: "AAAAAAAAAAAAAAAAAA/BBBBBBBBBBBBBBBBBBB=="
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.provisionerReplicaCount
+  label: "CephFS Provisioner Replica Count"
+  description: "Number of provisioner replicas"
+  type: int
+  required: true
+  default: 3
+  min: 1
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.reclaimPolicy
+  label: "CephFS Reclaim Policy"
+  description: "Volume reclaim policy"
+  type: enum
+  required: true
+  default: "Retain"
+  options:
+    - "Retain"
+    - "Delete"
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.enabledHostNetwork
+  label: "CephFS Enable Host Network"
+  description: "Enable host network for CephFS"
+  type: boolean
+  default: false
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.fsName
+  label: "CephFS Filesystem Name"
+  description: "Ceph filesystem name"
+  type: string
+  required: false
+  default: ""
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephFS.customValues
+  label: "CephFS Custom Values"
+  description: "Custom values override for CephFS (YAML format)"
+  type: yaml
+  required: false
+  show_if: "storage.cephFS.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.enabled
+  label: "Enable CephRBD Storage"
+  description: "Enable CephRBD block storage"
+  type: boolean
+  default: false
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.clusterID
+  label: "CephRBD Cluster ID"
+  description: "Ceph cluster identifier"
+  type: string
+  required: true
+  default: "aaaaaaaa-bbbb-1111-2222-33333ccccccc"
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.monitorList
+  label: "CephRBD Monitor List"
+  description: "List of Ceph monitor endpoints (format: ip:port)"
+  type: array[string]
+  required: false
+  default: []
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.pool
+  label: "CephRBD Pool"
+  description: "Ceph pool name for volumes"
+  type: string
+  required: true
+  default: "volumes"
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.userID
+  label: "CephRBD User ID"
+  description: "Ceph user identifier"
+  type: string
+  required: true
+  default: "admin"
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.userKey
+  label: "CephRBD User Key"
+  description: "Ceph user authentication key"
+  type: password
+  required: true
+  default: "AAAAAAAAAAAAAAAAAA/BBBBBBBBBBBBBBBBBBB=="
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.provisionerReplicaCount
+  label: "CephRBD Provisioner Replica Count"
+  description: "Number of provisioner replicas"
+  type: int
+  required: true
+  default: 3
+  min: 1
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.reclaimPolicy
+  label: "CephRBD Reclaim Policy"
+  description: "Volume reclaim policy"
+  type: enum
+  required: true
+  default: "Retain"
+  options:
+    - "Retain"
+    - "Delete"
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.enabledHostNetwork
+  label: "CephRBD Enable Host Network"
+  description: "Enable host network for CephRBD"
+  type: boolean
+  default: false
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: storage.cephRBD.customValues
+  label: "CephRBD Custom Values"
+  description: "Custom values override for CephRBD (YAML format)"
+  type: yaml
+  required: false
+  show_if: "storage.cephRBD.enabled=true"
+  group: "Storage Configuration"
+
+- variable: logging.enabled
+  label: "Enable Logging"
+  description: "Enable centralized logging system"
+  type: boolean
+  default: true
+  group: "Observability Configuration"
+
+- variable: logging.clusterOutputs.server.host
+  label: "Logging Server Host"
+  description: "Hostname or IP of the logging server"
+  type: string
+  required: true
+  default: "<changeme>"
+  show_if: "logging.enabled=true"
+  group: "Observability Configuration"
+
+- variable: logging.clusterOutputs.server.port
+  label: "Logging Server Port"
+  description: "Port of the logging server"
+  type: int
+  required: true
+  default: 24224
+  show_if: "logging.enabled=true"
+  group: "Observability Configuration"
+
+- variable: logging.customValues
+  label: "Logging Custom Values"
+  description: "Custom values override for logging (YAML format)"
+  type: yaml
+  required: false
+  show_if: "logging.enabled=true"
+  group: "Observability Configuration"
+
+- variable: monitoring.enabled
+  label: "Enable Monitoring"
+  description: "Enable Prometheus monitoring stack"
+  type: boolean
+  default: false
+  group: "Observability Configuration"
+
+- variable: monitoring.thanos.objectStorage.accessKey
+  label: "Thanos Access Key"
+  description: "S3 access key for Thanos storage"
+  type: string
+  required: true
+  default: "<changeme>"
+  show_if: "monitoring.enabled=true"
+  group: "Observability Configuration"
+
+- variable: monitoring.thanos.objectStorage.bucket
+  label: "Thanos Storage Bucket"
+  description: "S3 bucket name for Thanos storage"
+  type: string
+  required: true
+  default: "<changeme>"
+  show_if: "monitoring.enabled=true"
+  group: "Observability Configuration"
+
+- variable: monitoring.thanos.objectStorage.endpoint
+  label: "Thanos Object Storage Endpoint"
+  description: "S3-compatible storage endpoint for Thanos"
+  type: string
+  required: true
+  default: "<changeme:changeme>"
+  show_if: "monitoring.enabled=true"
+  group: "Observability Configuration"
+
+- variable: monitoring.thanos.objectStorage.secretKey
+  label: "Thanos Secret Key"
+  description: "S3 secret key for Thanos storage"
+  type: password
+  required: true
+  default: "<changeme>"
+  show_if: "monitoring.enabled=true"
+  group: "Observability Configuration"
+
+- variable: monitoring.thanosIngress.host
+  label: "Thanos Ingress Host"
+  description: "Hostname for Thanos web interface"
+  type: string
+  required: true
+  default: "<changeme>"
+  show_if: "monitoring.enabled=true"
+  group: "Observability Configuration"
+
+- variable: monitoring.customValues
+  label: "Monitoring Custom Values"
+  description: "Custom values override for monitoring (YAML format)"
+  type: yaml
+  required: false
+  show_if: "monitoring.enabled=true"
+  group: "Observability Configuration"
+
+- variable: x509CertExporter.enabled
+  label: "Enable X509 Certificate Exporter"
+  description: "Enable X509 certificate monitoring and metrics"
+  type: boolean
+  default: true
+  group: "Observability Configuration"
+
+- variable: x509CertExporter.customValues
+  label: "X509 Certificate Exporter Custom Values"
+  description: "Custom values override for X509 certificate exporter (YAML format)"
+  type: yaml
+  required: false
+  show_if: "x509CertExporter.enabled=true"
+  group: "Observability Configuration"
+
+- variable: metallb.enabled
+  label: "Enable MetalLB"
+  description: "Enable MetalLB load balancer"
+  type: boolean
+  default: true
+  group: "Network Services Configuration"
+
+- variable: metallb.customValues
+  label: "MetalLB Custom Values"
+  description: "Custom values override for MetalLB (YAML format)"
+  type: yaml
+  required: false
+  show_if: "metallb.enabled=true"
+  group: "Network Services Configuration"
+
+- variable: ingressNginx.enabled
+  label: "Enable Ingress NGINX"
+  description: "Enable NGINX ingress controller"
+  type: boolean
+  default: true
+  group: "Network Services Configuration"
+
+- variable: ingressNginx.customValues
+  label: "Ingress NGINX Custom Values"
+  description: "Custom values override for Ingress NGINX (YAML format)"
+  type: yaml
+  required: false
+  show_if: "ingressNginx.enabled=true"
+  group: "Network Services Configuration"
+
+- variable: sriovOperator.enabled
+  label: "Enable SR-IOV Operator"
+  description: "Enable SR-IOV network device plugin"
+  type: boolean
+  default: true
+  group: "Network Services Configuration"
+
+- variable: sriovOperator.customValues
+  label: "SR-IOV Operator Custom Values"
+  description: "Custom values override for SR-IOV Operator (YAML format)"
+  type: yaml
+  required: false
+  show_if: "sriovOperator.enabled=true"
+  group: "Network Services Configuration"
+
+- variable: kubevirt.enabled
+  label: "Enable KubeVirt"
+  description: "Enable KubeVirt for virtual machines"
+  type: boolean
+  default: true
+  group: "Virtualization Configuration"
+
+- variable: kubevirt.customValues
+  label: "KubeVirt Custom Values"
+  description: "Custom values override for KubeVirt (YAML format)"
+  type: yaml
+  required: false
+  show_if: "kubevirt.enabled=true"
+  group: "Virtualization Configuration"
+
+- variable: nodeConfigOperator.enabled
+  label: "Enable Node Config Operator"
+  description: "Enable node configuration operator"
+  type: boolean
+  default: true
+  group: "Node Configuration"
+
+- variable: nodeConfigOperator.managerConfig.aptEnabled
+  label: "Enable APT Management"
+  description: "Enable APT package management on nodes"
+  type: boolean
+  default: true
+  show_if: "nodeConfigOperator.enabled=true"
+  group: "Node Configuration"
+
+- variable: nodeConfigOperator.managerConfig.hostfsEnabled
+  label: "Enable Host Filesystem Access"
+  description: "Enable host filesystem access for node management"
+  type: boolean
+  default: true
+  show_if: "nodeConfigOperator.enabled=true"
+  group: "Node Configuration"
+
+- variable: nodeConfigOperator.customValues
+  label: "Node Config Operator Custom Values"
+  description: "Custom values override for Node Config Operator (YAML format)"
+  type: yaml
+  required: false
+  show_if: "nodeConfigOperator.enabled=true"
+  group: "Node Configuration"
+
+- variable: certManager.enabled
+  label: "Enable Cert Manager"
+  description: "Enable automatic TLS certificate management"
+  type: boolean
+  default: false
+  group: "Security Configuration"
+
+- variable: certManager.customValues
+  label: "Cert Manager Custom Values"
+  description: "Custom values override for Cert Manager (YAML format)"
+  type: yaml
+  required: false
+  show_if: "certManager.enabled=true"
+  group: "Security Configuration"
+
+- variable: ntp.enabled
+  label: "Enable NTP"
+  description: "Enable Network Time Protocol synchronization"
+  type: boolean
+  default: true
+  group: "System Configuration"
+
+- variable: ntp.customValues
+  label: "NTP Custom Values"
+  description: "Custom values override for NTP (YAML format)"
+  type: yaml
+  required: false
+  show_if: "ntp.enabled=true"
+  group: "System Configuration"
+
+- variable: registries.enabled
+  label: "Enable Custom Registries"
+  description: "Enable custom container registry configuration"
+  type: boolean
+  default: false
+  group: "Registry Configuration"
