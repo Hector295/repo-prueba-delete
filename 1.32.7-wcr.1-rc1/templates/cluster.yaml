@@ -128,20 +128,19 @@ spec:
           kind: OpenstackConfig
           name: machine-control-plane-{{ .Values.cluster.name }}
 
-      {{- if and .Values.workerNodes .Values.workerNodes.nodes }}
       {{- range $nodepool := .Values.workerNodes.nodes }}
       - name: {{ $nodepool.name }}
-        quantity: {{ $nodepool.quantity | default ((.Values.workerNodes.defaults).quantity | default 1) }}
+        quantity: {{ $nodepool.quantity | default $.Values.workerNodes.defaults.quantity }}
         controlPlaneRole: false
-        {{- if or (not (empty $nodepool.labels)) (and .Values.workerNodes.defaults (not (empty .Values.workerNodes.defaults.labels))) }}
+        {{- if or (not (empty $nodepool.labels)) (not (empty $.Values.workerNodes.defaults.labels)) }}
         labels:
-          {{- with ($nodepool.labels | default ((.Values.workerNodes.defaults).labels | default dict)) }}
+          {{- with ($nodepool.labels | default $.Values.workerNodes.defaults.labels) }}
           {{- toYaml . | nindent 8 }}
           {{- end }}
         {{- end }}
-        {{- if or (not (empty $nodepool.taints)) (and .Values.workerNodes.defaults (not (empty .Values.workerNodes.defaults.taints))) }}
+        {{- if or (not (empty $nodepool.taints)) (not (empty $.Values.workerNodes.defaults.taints)) }}
         taints:
-          {{- with ($nodepool.taints | default ((.Values.workerNodes.defaults).taints | default list)) }}
+          {{- with ($nodepool.taints | default $.Values.workerNodes.defaults.taints) }}
           {{- toYaml . | nindent 8 }}
           {{- end }}
         {{- end }}
@@ -150,7 +149,6 @@ spec:
         machineConfigRef:
           kind: OpenstackConfig
           name: {{ $nodepool.name }}
-      {{- end }}
       {{- end }}
     machineSelectorConfig:
       - config:
