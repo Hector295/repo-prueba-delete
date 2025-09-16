@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "rke2-openstack-cilium.name" -}}
+{{- define "rke2-openstack-calico.name" -}}
 {{- default .Chart.Name .Values.cluster.name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "rke2-openstack-cilium.fullname" -}}
+{{- define "rke2-openstack-calico.fullname" -}}
 {{- if .Values.cluster.name }}
 {{- .Values.cluster.name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "rke2-openstack-cilium.chart" -}}
+{{- define "rke2-openstack-calico.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "rke2-openstack-cilium.labels" -}}
-helm.sh/chart: {{ include "rke2-openstack-cilium.chart" . }}
-{{ include "rke2-openstack-cilium.selectorLabels" . }}
+{{- define "rke2-openstack-calico.labels" -}}
+helm.sh/chart: {{ include "rke2-openstack-calico.chart" . }}
+{{ include "rke2-openstack-calico.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,7 +45,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "rke2-openstack-cilium.selectorLabels" -}}
+{{- define "rke2-openstack-calico.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "rke2-openstack-cilium.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -53,9 +53,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "rke2-openstack-cilium.serviceAccountName" -}}
+{{- define "rke2-openstack-calico.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "rke2-openstack-cilium.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "rke2-openstack-calico.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
