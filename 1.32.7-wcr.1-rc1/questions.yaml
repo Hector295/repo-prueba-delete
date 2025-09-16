@@ -110,9 +110,9 @@ questions:
   default: "https://whitecloud.intra.whitestack.com:5000/v3"
   group: "Infrastructure Configuration"
 
-- variable: infraConfig.availabilityZones
-  label: "Availability Zones"
-  description: "List of OpenStack availability zones for node distribution and high availability"
+- variable: infraConfig.availabilityZone
+  label: "Availability Zone"
+  description: "OpenStack availability zone for node distribution and high availability"
   type: string
   required: false
   default: ""

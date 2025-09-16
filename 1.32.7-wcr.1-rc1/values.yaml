@@ -70,7 +70,7 @@ infraConfig:
   # -- OpenStack Keystone authentication URL (identity service endpoint)
   authUrl: https://whitecloud.intra.whitestack.com:5000/v3
   # -- List of OpenStack availability zones for node distribution and high availability
-  availabilityZones: ""
+  availabilityZone: ""
   domainName: Default
   keypairName: ""
   region: RegionOne

@@ -24,9 +24,9 @@ allowedAddressPairs:
 allowedAddressPairs: []
 {{- end }}
 authUrl: {{ .Values.infraConfig.authUrl | quote }}
-availabilityZone: {{ .Values.controlPlaneNodes.rootVolume.availabilityZone | default "nova" }}
-bootFromVolume: {{ .Values.controlPlaneNodes.bootFromVolume | default "true" }}
-cacert: "{{ .Values.infraConfig.caCerts.configMap.name | default "" }}"
+availabilityZone: {{ .Values.infraConfig.availabilityZone | default "nova" }}
+bootFromVolume: {{ .Values.controlPlaneNodes.bootFromVolume | default "false" }}
+cacert: ""
 configDrive: {{ .Values.controlPlaneNodes.configDrive | default "false" }}
 domainId: "{{ .Values.infraConfig.domainId | default "" }}"
 {{- if .Values.infraConfig.domainName }}
@@ -81,5 +81,5 @@ username: {{ .Values.infraConfig.username }}
 volumeDevicePath: "{{ .Values.controlPlaneNodes.rootVolume.volumeDevicePath | default "" }}"
 volumeId: "{{ .Values.controlPlaneNodes.rootVolume.volumeId | default "" }}"
 volumeName: "{{ .Values.controlPlaneNodes.rootVolume.volumeName | default "" }}"
-volumeSize: "{{ .Values.controlPlaneNodes.rootVolume.sizeGiB | default "20" }}"
+volumeSize: "{{ .Values.controlPlaneNodes.rootVolume.sizeGiB | default "" }}"
 volumeType: "{{ .Values.controlPlaneNodes.rootVolume.volumeType | default "" }}"

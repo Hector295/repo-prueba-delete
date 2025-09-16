@@ -30,9 +30,9 @@ allowedAddressPairs:
 allowedAddressPairs: []
 {{- end }}
 authUrl: {{ $.Values.infraConfig.authUrl | quote }}
-availabilityZone: {{ $nodepool.rootVolume.availabilityZone | default $.Values.workerNodes.defaults.rootVolume.availabilityZone | default "nova" }}
-bootFromVolume: {{ $nodepool.bootFromVolume | default $.Values.workerNodes.defaults.bootFromVolume | default "true" }}
-cacert: "{{ $.Values.infraConfig.caCerts.configMap.name | default "" }}"
+availabilityZone: {{ $nodepool.infraConfig.availabilityZone | default "nova" }}
+bootFromVolume: {{ $nodepool.bootFromVolume | default $.Values.workerNodes.defaults.bootFromVolume | default "false" }}
+cacert: ""
 configDrive: {{ $nodepool.configDrive | default $.Values.workerNodes.defaults.configDrive | default "false" }}
 domainId: "{{ $.Values.infraConfig.domainId | default "" }}"
 {{- if $.Values.infraConfig.domainName }}
@@ -85,6 +85,6 @@ username: {{ $.Values.infraConfig.username }}
 volumeDevicePath: "{{ $nodepool.rootVolume.volumeDevicePath | default $.Values.workerNodes.defaults.rootVolume.volumeDevicePath | default "" }}"
 volumeId: "{{ $nodepool.rootVolume.volumeId | default $.Values.workerNodes.defaults.rootVolume.volumeId | default "" }}"
 volumeName: "{{ $nodepool.rootVolume.volumeName | default $.Values.workerNodes.defaults.rootVolume.volumeName | default "" }}"
-volumeSize: "{{ $nodepool.rootVolume.sizeGiB | default $.Values.workerNodes.defaults.rootVolume.sizeGiB | default "20" }}"
+volumeSize: "{{ $nodepool.rootVolume.sizeGiB | default $.Values.workerNodes.defaults.rootVolume.sizeGiB | default "" }}"
 volumeType: "{{ $nodepool.rootVolume.volumeType | default $.Values.workerNodes.defaults.rootVolume.volumeType | default "" }}"
 {{- end }}
