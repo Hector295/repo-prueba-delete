@@ -8,7 +8,7 @@ metadata:
     {{- toYaml .Values.cluster.annotations | nindent 4 }}
   {{- end }}
   labels:
-    {{- include "rke2-rancher-openstack-calico.labels" . | nindent 4 }}
+    {{- include "rke2-openstack-calico.labels" . | nindent 4 }}
     {{- if .Values.cluster.labels }}
     {{- toYaml .Values.cluster.labels | nindent 4 }}
     {{- end }}

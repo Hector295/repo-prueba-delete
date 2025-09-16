@@ -46,7 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "rke2-openstack-calico.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "rke2-openstack-cilium.name" . }}
+app.kubernetes.io/name: {{ include "rke2-openstack-calico.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
