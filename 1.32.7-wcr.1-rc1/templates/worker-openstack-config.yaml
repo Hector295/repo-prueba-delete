@@ -30,7 +30,7 @@ allowedAddressPairs:
 allowedAddressPairs: []
 {{- end }}
 authUrl: {{ $.Values.infraConfig.authUrl | quote }}
-availabilityZone: {{ $nodepool.infraConfig.availabilityZone | default "nova" }}
+availabilityZone: {{ $.Values.infraConfig.availabilityZone | default "nova" }}
 bootFromVolume: {{ $nodepool.bootFromVolume | default $.Values.workerNodes.defaults.bootFromVolume | default "false" }}
 cacert: ""
 configDrive: {{ $nodepool.configDrive | default $.Values.workerNodes.defaults.configDrive | default "false" }}
