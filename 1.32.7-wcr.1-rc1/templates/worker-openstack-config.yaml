@@ -51,9 +51,8 @@ imageName: {{ ($nodepool.imageName | default $.Values.workerNodes.imageName) | q
 insecure: {{ $.Values.infraConfig.insecure | default "false" }}
 ipVersion: "{{ $.Values.infraConfig.ipVersion | default "4" }}"
 keypairName: {{ $.Values.infraConfig.keypairName }}
-netId: "{{ $.Values.infraConfig.principalNetwork.netId | default "" }}"
-{{- if $.Values.infraConfig.principalNetwork.netName }}
-netName: {{ $.Values.infraConfig.principalNetwork.netName }}
+{{- if $.Values.infraConfig.netName }}
+netName: {{ $.Values.infraConfig.netName }}
 {{- end }}
 novaNetwork: {{ $.Values.infraConfig.novaNetwork | default "false" }}
 password: "{{ (lookup "v1" "Secret" .Values.infraConfig.password.secret.namespace .Values.infraConfig.password.secret.name).data.password | b64dec }}"
@@ -61,23 +60,12 @@ privateKeyFile: ""
 region: {{ $.Values.infraConfig.region }}
 sshPort: {{ $.Values.infraConfig.sshPort | default "22" | quote }}
 sshUser: {{ $.Values.infraConfig.sshUser }}
-{{- if or ($nodepool.securityGroups) ($.Values.workerNodes.defaults.securityGroups) }}
-secGroups: {{ ($nodepool.securityGroups | default $.Values.workerNodes.defaults.securityGroups) | join "," }}
-{{- else }}
-secGroups: ""
-{{- end }}
+secGroups: {{ ($nodepool.securityGroups | default $.Values.workerNodes.defaults.securityGroups) }}
 tenantDomainId: "{{ $.Values.infraConfig.tenantDomainId | default "" }}"
 tenantDomainName: "{{ $.Values.infraConfig.tenantDomainName | default "" }}"
 tenantId: "{{ $.Values.infraConfig.tenantId | default "" }}"
-{{- if $.Values.infraConfig.tenantName }}
 tenantName: {{ $.Values.infraConfig.tenantName }}
-{{- end }}
-{{- if or ($nodepool.userDataFile) ($.Values.workerNodes.defaults.userDataFile) }}
-userDataFile: |
-  {{- ($nodepool.userDataFile | default $.Values.workerNodes.defaults.userDataFile) | nindent 2 }}
-{{- else }}
 userDataFile: ""
-{{- end }}
 userDomainId: "{{ $.Values.infraConfig.userDomainId | default "" }}"
 userDomainName: "{{ $.Values.infraConfig.userDomainName | default "" }}"
 userId: "{{ $.Values.infraConfig.userId | default "" }}"
