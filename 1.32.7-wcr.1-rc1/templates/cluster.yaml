@@ -82,25 +82,25 @@ spec:
       {{- if .Values.cluster.etcd.exposeMetrics }}
       etcd-expose-metrics: {{ .Values.cluster.etcd.exposeMetrics }}
       {{- end }}
-      {{- if not (empty .Values.cluster.kubeComponents.kubeControllerManager.extraArgs) }}
+      {{- if and .Values.cluster.kubeComponents.kubeControllerManager .Values.cluster.kubeComponents.kubeControllerManager.extraArgs (not (empty .Values.cluster.kubeComponents.kubeControllerManager.extraArgs)) }}
       kube-controller-manager-arg:
         {{- with $.Values.cluster.kubeComponents.kubeControllerManager.extraArgs }}
         - {{ . }}
         {{- end }}
       {{- end }}
-      {{- if not (empty .Values.cluster.kubeComponents.kubeShceduler.extraArgs) }}
+      {{- if and .Values.cluster.kubeComponents.kubeScheduler .Values.cluster.kubeComponents.kubeScheduler.extraArgs (not (empty .Values.cluster.kubeComponents.kubeScheduler.extraArgs)) }}
       kube-scheduler-arg:
-        {{- with $.Values.cluster.kubeComponents.kubeShceduler.extraArgs }}
+        {{- with $.Values.cluster.kubeComponents.kubeScheduler.extraArgs }}
         - {{ . }}
         {{- end }}
       {{- end }}
-      {{- if not (empty .Values.cluster.kubeComponents.kubeApiServer.extraArgs) }}
+      {{- if and .Values.cluster.kubeComponents.kubeApiServer .Values.cluster.kubeComponents.kubeApiServer.extraArgs (not (empty .Values.cluster.kubeComponents.kubeApiServer.extraArgs)) }}
       kube-apiserver-arg:
         {{- with $.Values.cluster.kubeComponents.kubeApiServer.extraArgs }}
         - {{ . }}
         {{- end }}
       {{- end }}
-      {{- if not (empty .Values.cluster.kubeComponents.kubeProxy.extraArgs) }}
+      {{- if and .Values.cluster.kubeComponents.kubeProxy .Values.cluster.kubeComponents.kubeProxy.extraArgs (not (empty .Values.cluster.kubeComponents.kubeProxy.extraArgs)) }}
       kubelet-proxy-arg:
         {{- with $.Values.cluster.kubeComponents.kubeProxy.extraArgs }}
         - {{ . }}
