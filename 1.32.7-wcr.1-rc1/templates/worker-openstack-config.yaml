@@ -70,9 +70,9 @@ userDomainId: "{{ $.Values.infraConfig.userDomainId | default "" }}"
 userDomainName: "{{ $.Values.infraConfig.userDomainName | default "" }}"
 userId: "{{ $.Values.infraConfig.userId | default "" }}"
 username: {{ $.Values.infraConfig.username }}
-volumeDevicePath: "{{ $nodepool.rootVolume.volumeDevicePath | default $.Values.workerNodes.defaults.rootVolume.volumeDevicePath | default "" }}"
-volumeId: "{{ $nodepool.rootVolume.volumeId | default $.Values.workerNodes.defaults.rootVolume.volumeId | default "" }}"
-volumeName: "{{ $nodepool.rootVolume.volumeName | default $.Values.workerNodes.defaults.rootVolume.volumeName | default "" }}"
+volumeDevicePath: ""
+volumeId: ""
+volumeName: ""
 volumeSize: "{{ $nodepool.rootVolume.sizeGiB | default $.Values.workerNodes.defaults.rootVolume.sizeGiB | default "" }}"
 volumeType: "{{ $nodepool.rootVolume.volumeType | default $.Values.workerNodes.defaults.rootVolume.volumeType | default "" }}"
 {{- end }}
