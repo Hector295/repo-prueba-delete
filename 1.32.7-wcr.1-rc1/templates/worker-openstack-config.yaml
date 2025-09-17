@@ -9,14 +9,6 @@ activeTimeout: "{{ $nodepool.activeTimeout | default $.Values.workerNodes.defaul
 applicationCredentialId: "{{ $.Values.infraConfig.applicationCredentialId | default "" }}"
 applicationCredentialName: "{{ $.Values.infraConfig.applicationCredentialName | default "" }}"
 applicationCredentialSecret: "{{ $.Values.infraConfig.applicationCredentialSecret | default "" }}"
-{{- if or ($nodepool.allowedAddressPairs) ($.Values.workerNodes.defaults.allowedAddressPairs) }}
-allowedAddressPairs:
-{{- range ($nodepool.allowedAddressPairs | default $.Values.workerNodes.defaults.allowedAddressPairs) }}
-  - {{ . }}
-{{- end }}
-{{- else }}
-allowedAddressPairs: []
-{{- end }}
 authUrl: {{ $.Values.infraConfig.authUrl | quote }}
 availabilityZone: {{ $.Values.infraConfig.availabilityZone | default "nova" }}
 bootFromVolume: {{ $nodepool.bootFromVolume | default $.Values.workerNodes.defaults.bootFromVolume | default "false" }}

@@ -7,14 +7,6 @@ activeTimeout: "{{ .Values.controlPlaneNodes.activeTimeout | default "200" }}"
 applicationCredentialId: "{{ .Values.infraConfig.applicationCredentialId | default "" }}"
 applicationCredentialName: "{{ .Values.infraConfig.applicationCredentialName | default "" }}"
 applicationCredentialSecret: "{{ .Values.infraConfig.applicationCredentialSecret | default "" }}"
-{{- if .Values.controlPlaneNodes.allowedAddressPairs }}
-allowedAddressPairs:
-{{- range .Values.controlPlaneNodes.allowedAddressPairs }}
-  - {{ . }}
-{{- end }}
-{{- else }}
-allowedAddressPairs: []
-{{- end }}
 authUrl: {{ .Values.infraConfig.authUrl | quote }}
 availabilityZone: {{ .Values.infraConfig.availabilityZone | default "nova" }}
 bootFromVolume: {{ .Values.controlPlaneNodes.bootFromVolume | default "false" }}

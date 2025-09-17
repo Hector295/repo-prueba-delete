@@ -112,8 +112,10 @@ spec:
         controlPlaneRole: true
         {{- if not (empty .Values.controlPlaneNodes.labels) }}
         labels:
-          {{- with .Values.controlPlaneNodes.labels }}
-          {{- toYaml . | nindent 8 }}
+          {{- if kindIs "slice" .Values.controlPlaneNodes.labels }}
+          {{- include "rke2-openstack-calico.labelsToMap" .Values.controlPlaneNodes.labels | nindent 8 }}
+          {{- else }}
+          {{- toYaml .Values.controlPlaneNodes.labels | nindent 8 }}
           {{- end }}
         {{- end }}
         {{- if not (empty .Values.controlPlaneNodes.taints) }}
@@ -134,8 +136,11 @@ spec:
         controlPlaneRole: false
         {{- if or (not (empty $nodepool.labels)) (not (empty $.Values.workerNodes.defaults.labels)) }}
         labels:
-          {{- with ($nodepool.labels | default $.Values.workerNodes.defaults.labels) }}
-          {{- toYaml . | nindent 8 }}
+          {{- $labels := ($nodepool.labels | default $.Values.workerNodes.defaults.labels) }}
+          {{- if kindIs "slice" $labels }}
+          {{- include "rke2-openstack-calico.labelsToMap" $labels | nindent 8 }}
+          {{- else }}
+          {{- toYaml $labels | nindent 8 }}
           {{- end }}
         {{- end }}
         {{- if or (not (empty $nodepool.taints)) (not (empty $.Values.workerNodes.defaults.taints)) }}
