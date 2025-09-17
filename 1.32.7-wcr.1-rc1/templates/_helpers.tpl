@@ -69,7 +69,7 @@ Convert label array to map
 {{- range . -}}
 {{- $parts := split "=" . -}}
 {{- if eq (len $parts) 2 -}}
-{{- $_ := set $labels ($parts._0) ($parts._1) -}}
+{{- $_ := set $labels (index $parts 0) (index $parts 1) -}}
 {{- end -}}
 {{- end -}}
 {{- toYaml $labels -}}
