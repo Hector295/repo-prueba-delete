@@ -61,6 +61,20 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{/*
+Convert label array to map
+*/}}
+{{- define "rke2-openstack-calico.labelsToMap" -}}
+{{- $labels := dict -}}
+{{- range . -}}
+{{- $parts := split "=" . -}}
+{{- if eq (len $parts) 2 -}}
+{{- $_ := set $labels ($parts._0) ($parts._1) -}}
+{{- end -}}
+{{- end -}}
+{{- toYaml $labels -}}
+{{- end -}}
+
 {{- define "cloudConfig.innerSecret" -}}
 apiVersion: v1
 kind: Secret
