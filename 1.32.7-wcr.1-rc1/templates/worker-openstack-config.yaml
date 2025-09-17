@@ -5,18 +5,6 @@ kind: OpenstackConfig
 metadata:
   name: {{ $nodepool.name }}
   namespace: fleet-default
-  {{- if or ($nodepool.annotations) ($.Values.workerNodes.defaults.annotations) }}
-  annotations:
-    {{- with ($nodepool.annotations | default $.Values.workerNodes.defaults.annotations) }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-  {{- end }}
-  {{- if or ($nodepool.labels) ($.Values.workerNodes.defaults.labels) }}
-  labels:
-    {{- with ($nodepool.labels | default $.Values.workerNodes.defaults.labels) }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
-  {{- end }}
 activeTimeout: "{{ $nodepool.activeTimeout | default $.Values.workerNodes.defaults.activeTimeout | default "200" }}"
 applicationCredentialId: "{{ $.Values.infraConfig.applicationCredentialId | default "" }}"
 applicationCredentialName: "{{ $.Values.infraConfig.applicationCredentialName | default "" }}"

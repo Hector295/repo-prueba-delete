@@ -3,14 +3,6 @@ kind: OpenstackConfig
 metadata:
   name: machine-control-plane-{{ .Values.cluster.name }}
   namespace: fleet-default
-  {{- if .Values.controlPlaneNodes.annotations }}
-  annotations:
-    {{- toYaml .Values.controlPlaneNodes.annotations | nindent 4 }}
-  {{- end }}
-  {{- if .Values.controlPlaneNodes.labels }}
-  labels:
-    {{- toYaml .Values.controlPlaneNodes.labels | nindent 4 }}
-  {{- end }}
 activeTimeout: "{{ .Values.controlPlaneNodes.activeTimeout | default "200" }}"
 applicationCredentialId: "{{ .Values.infraConfig.applicationCredentialId | default "" }}"
 applicationCredentialName: "{{ .Values.infraConfig.applicationCredentialName | default "" }}"
