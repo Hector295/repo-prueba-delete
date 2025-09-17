@@ -107,7 +107,7 @@ spec:
         {{- end }}
       {{- end }}
     machinePools:
-      - name: control-plane-{{ .Values.cluster.name }}-node
+      - name: control-plane-node
         quantity: {{ .Values.controlPlaneNodes.quantity }}
         controlPlaneRole: true
         etcdRole: true
