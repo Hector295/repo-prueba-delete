@@ -31,6 +31,8 @@ imageName: {{ ($nodepool.imageName | default $.Values.workerNodes.imageName) | q
 insecure: {{ $.Values.infraConfig.insecure | default "false" }}
 ipVersion: "{{ $.Values.infraConfig.ipVersion | default "4" }}"
 keypairName: {{ $.Values.infraConfig.keypairName }}
+privateKeyFile: |
+{{ $.Values.infraConfig.privateKeyFile | indent 2 }}
 {{- if $.Values.infraConfig.netName }}
 netName: {{ $.Values.infraConfig.netName }}
 {{- end }}

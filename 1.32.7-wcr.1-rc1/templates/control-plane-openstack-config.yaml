@@ -29,6 +29,8 @@ imageName: {{ .Values.controlPlaneNodes.imageName | quote }}
 insecure: {{ .Values.infraConfig.insecure | default "false" }}
 ipVersion: "{{ .Values.infraConfig.ipVersion | default "4" }}"
 keypairName: {{ .Values.infraConfig.keypairName }}
+privateKeyFile: |
+{{ .Values.infraConfig.privateKeyFile | indent 2 }}
 netName: {{ .Values.infraConfig.netName }}
 novaNetwork: {{ .Values.infraConfig.novaNetwork | default "false" }}
 password: "{{ (lookup "v1" "Secret" .Values.infraConfig.password.secret.namespace .Values.infraConfig.password.secret.name).data.password | b64dec }}"

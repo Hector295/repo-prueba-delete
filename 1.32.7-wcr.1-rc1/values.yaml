@@ -73,6 +73,7 @@ infraConfig:
   availabilityZone: ""
   domainName: Default
   keypairName: ""
+  privateKeyFile: ""
   region: RegionOne
   sshUser: ubuntu
   tenantName: ""
