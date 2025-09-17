@@ -22,13 +22,13 @@ spec:
       {{ include "cloudConfig.innerSecret" . | indent 4 }}
     {{- if not (empty .Values.cluster.additionalManifest ) }}
       ---
-      {{- toYaml . | nindent 6 }}
+      {{- toYaml .Values.cluster.additionalManifest | nindent 6 }}
     {{- end }}
     {{- else }}
     {{- if not (empty .Values.cluster.additionalManifest ) }}
     additionalManifest: |-
       ---
-      {{- toYaml . | nindent 6 }}
+      {{- toYaml .Values.cluster.additionalManifest | nindent 6 }}
     {{- end }}
     {{- end }}
 
