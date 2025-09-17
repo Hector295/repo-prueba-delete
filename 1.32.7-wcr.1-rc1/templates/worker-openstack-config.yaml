@@ -38,7 +38,6 @@ netName: {{ $.Values.infraConfig.netName }}
 {{- end }}
 novaNetwork: {{ $.Values.infraConfig.novaNetwork | default "false" }}
 password: "{{ (lookup "v1" "Secret" $.Values.infraConfig.password.secret.namespace $.Values.infraConfig.password.secret.name).data.password | b64dec }}"
-privateKeyFile: ""
 region: {{ $.Values.infraConfig.region }}
 sshPort: {{ $.Values.infraConfig.sshPort | default "22" | quote }}
 sshUser: {{ $.Values.infraConfig.sshUser }}
